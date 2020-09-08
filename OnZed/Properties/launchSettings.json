@@ -1,0 +1,9 @@
+{
+  "profiles": {
+    "OnZed": {
+      "commandName": "Executable",
+      "executablePath": "D:\\onset\\serverfiles\\OnsetServer.exe",
+      "workingDirectory": "D:\\onset\\serverfiles"
+    }
+  }
+}
