@@ -6,6 +6,7 @@ using OnZed.Entities.Clients;
 using OnZed.Entities.Zeds;
 using OnZed.Utils;
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 
@@ -18,19 +19,28 @@ namespace OnZed
 
         public static OnZedConfig Config { get; private set; }
 
-        public override void OnStart()
+        public GameMode()
         {
             if (Instance != null)
                 return;
 
             Instance = this;
 
+        }
+
+        public override void OnStart()
+        {
             try
             {
                 Logger.Info("Starting OnZed Resource!");
 
+                TaskManager.Initialize();
+
                 Server.OverrideEntityFactory(new ClientFactory());
                 Server.OverrideEntityFactory(new ZedFactory());
+
+                Server.RegisterServerEvents(new PlayerManager());
+                Server.RegisterServerEvents(new ZedsManager());
 
                 Logger.Info("Loading server configuration.");
                 Config = Data.Config<OnZedConfig>();
@@ -45,7 +55,7 @@ namespace OnZed
                 }
 
                 Logger.Info("Loading all players from database.");
-                //PlayerManager.LoadAllPlayerDatabase();
+                PlayerManager.LoadAllPlayerDatabase();
 
                 Logger.Info("Loading OnZed End!");
             }
@@ -62,12 +72,6 @@ namespace OnZed
 
 
         #region ServerEvents
-
-        [ServerEvent(EventType.GameTick)]
-        public void OnTick(double delta)
-        {
-            //ZedsManager.OnTick();
-        }
 
         [ServerEvent(EventType.ConsoleInput)]
         public void OnConsoleInput(string text)
@@ -112,6 +116,12 @@ namespace OnZed
 
                     break;
             }
+        }
+
+        [ServerEvent(EventType.GameTick)]
+        public void OnTick(double delta)
+        {
+            TaskManager.Pulse();
         }
     }
     #endregion

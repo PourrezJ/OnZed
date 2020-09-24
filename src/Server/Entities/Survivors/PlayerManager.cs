@@ -8,11 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace OnZed.Entities
 {
-    /*
-    public class PlayerManager : GameMode
+    
+    public class PlayerManager
     {
         #region Fields
         public static List<PlayerData> PlayerDatas { get; private set; }
@@ -30,7 +31,7 @@ namespace OnZed.Entities
         {
             PlayerDatas = MongoDb.GetCollectionSafe<PlayerData>("players").AsQueryable().ToList<PlayerData>();
 
-            Instance.Logger.Info("Mise en cache des " + PlayerDatas.Count() + " joueurs");
+            Log.Info("Mise en cache des " + PlayerDatas.Count() + " joueurs");
         }
         #endregion
 
@@ -43,20 +44,22 @@ namespace OnZed.Entities
                 // Check if exist in database
                 if (PlayerDatas.Exists(p=>p.SteamID == player.SteamID64))
                 {
-                    Client client = player as Client;
+                    Survivor client = player as Survivor;
 
                     client.PlayerData = PlayerDatas.Find(p => p.SteamID == player.SteamID64);
-                    Instance.Logger.Info($"Loading player {player.SteamID64} {player.Name}");
+                    Log.Info($"Loading player {player.SteamID64} {player.Name}");
 
                     UCoords lastPos = client.PlayerData.LastPosition;
 
                     client.SetSpawnLocation(lastPos.ToVector3(), lastPos.Heading);
 
+                    client.Spawned = true;
+
                     player.CallRemote("ClientConnected");
                 }
                 else // New Player
                 {
-                    Instance.Logger.Info($"Creating new player for {player.SteamID64} {player.Name}");
+                    Log.Info($"Creating new player for {player.SteamID64} {player.Name}");
 
                     // Go to Charcreator
                     player.CallRemote("LaunchCharCreator");
@@ -64,31 +67,18 @@ namespace OnZed.Entities
                     
                 }
             }
-        }
 
+            Task.Run(() =>
+            {
+                TaskManager.Run(() =>
+                {
+                    var pos = player.GetPosition();
 
-        public void OnConnectionReq(string ip, int port)
-        {
-            Instance.Logger.Info("incoming request {IP}:{PORT}", ip, port);
-        }
+                    Console.WriteLine($"{pos.X} {pos.Y} {pos.Z}");
+                });
 
-        [ServerEvent(EventType.PlayerServerAuth)]
-        public void OnPlayerServerAuth(Player player)
-        {
-
-        }
-
-        [ServerEvent(EventType.PlayerSteamAuth)]
-        public void OnPlayerSteamAuth(Player player)
-        {
-
-        }
-
-        [ServerEvent(EventType.PlayerSpawn)]
-        public void OnPlayerSpawn(Player player)
-        {
-
+            });
         }
         #endregion
-    }*/
+    }
 }

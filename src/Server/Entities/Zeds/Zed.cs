@@ -16,6 +16,17 @@ namespace OnZed.Entities
     {
         public ZombieState ZombieState;
 
+        private Survivor survivorFollowed;
+        public Survivor SurvivorFollowed
+        {
+            get => survivorFollowed;
+            set
+            {
+                survivorFollowed = value;
+                Follow(value);
+            }
+        }
+
         public Zed(int id) : base(id)
         {
             

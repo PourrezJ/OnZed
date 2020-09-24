@@ -5,11 +5,11 @@ using System.Text;
 
 namespace OnZed.Entities.Clients
 {
-    public class ClientFactory : IEntityFactory<Client>
+    public class ClientFactory : IEntityFactory<Survivor>
     {
-        public Client Create(int id)
+        public Survivor Create(int id)
         {
-            return new Client(id);
+            return new Survivor(id);
         }
     }
 }
