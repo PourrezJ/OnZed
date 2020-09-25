@@ -1,4 +1,6 @@
-﻿using Onsharp.Commands;
+﻿using MongoDB.Driver.Core.Servers;
+using Onsharp;
+using Onsharp.Commands;
 using Onsharp.Events;
 using Onsharp.Plugins;
 using OnZed.Entities;
@@ -9,6 +11,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using IServer = Onsharp.IServer;
 
 namespace OnZed
 {

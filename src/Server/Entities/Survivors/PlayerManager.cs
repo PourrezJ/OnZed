@@ -41,10 +41,12 @@ namespace OnZed.Entities
         {
             lock (PlayerDatas)
             {
+                Survivor client = player as Survivor;
+
                 // Check if exist in database
                 if (PlayerDatas.Exists(p=>p.SteamID == player.SteamID64))
                 {
-                    Survivor client = player as Survivor;
+                    
 
                     client.PlayerData = PlayerDatas.Find(p => p.SteamID == player.SteamID64);
                     Log.Info($"Loading player {player.SteamID64} {player.Name}");
@@ -63,21 +65,10 @@ namespace OnZed.Entities
 
                     // Go to Charcreator
                     player.CallRemote("LaunchCharCreator");
-
-                    
                 }
+
+                client.Spawned = true;
             }
-
-            Task.Run(() =>
-            {
-                TaskManager.Run(() =>
-                {
-                    var pos = player.GetPosition();
-
-                    Console.WriteLine($"{pos.X} {pos.Y} {pos.Z}");
-                });
-
-            });
         }
         #endregion
     }

@@ -19,7 +19,10 @@ namespace OnZed
         #region Zombies
 
         public int MaxZombieWorld = 500;
-        public int MaxZombiePlayer = 20;
+        public int MaxZombiePlayer = 1;
+        public int HitDelay = 1;
+        public int ZombieMinAgro = 1000;
+        public int ZombieMaxAgro = 5000;
         #endregion
     }
 }
