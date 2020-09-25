@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnZed", "src\Server\OnZed.csproj", "{3E6D7EF4-DDB4-4605-9FCB-1ADCB4836751}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Onsharp", "..\Onsharp\api\Onsharp\Onsharp.csproj", "{B2B63CB4-E377-422D-8A3B-672BEF2913E5}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{3E6D7EF4-DDB4-4605-9FCB-1ADCB4836751}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E6D7EF4-DDB4-4605-9FCB-1ADCB4836751}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E6D7EF4-DDB4-4605-9FCB-1ADCB4836751}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B2B63CB4-E377-422D-8A3B-672BEF2913E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B2B63CB4-E377-422D-8A3B-672BEF2913E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B2B63CB4-E377-422D-8A3B-672BEF2913E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B2B63CB4-E377-422D-8A3B-672BEF2913E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
