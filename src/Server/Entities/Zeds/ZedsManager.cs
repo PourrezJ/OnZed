@@ -1,14 +1,9 @@
 ﻿using Onsharp.Entities;
+using Onsharp.Enums;
 using Onsharp.Events;
 using Onsharp.Threading;
-using Onsharp.World;
-using OnZed.Utils;
 using OnZed.Utils.Extensions;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Numerics;
-using System.Text;
 
 namespace OnZed.Entities
 {
@@ -16,7 +11,7 @@ namespace OnZed.Entities
     {
         public ZedsManager()
         {
-            Timer.Create(() => 
+            Timer.Create(() =>
             {
                 lock (GameMode.Instance.Server.Players)
                 {
@@ -27,51 +22,60 @@ namespace OnZed.Entities
                         if (client == null)
                             continue;
 
+                        if (!client.IsValid)
+                            continue;
+
                         if (!client.Spawned)
                             continue;
 
-                        var ppos = player.GetPosition();
-
                         if (client.Zeds.Count < GameMode.Config.MaxZombiePlayer)
                         {
+                            var ppos = client.GetPosition();
+
                             Zed zed = GameMode.Instance.Server.CreateNPC(ppos.Around(1000), 0) as Zed;
                             client.Zeds.Add(zed);
                         }
+                    }
+                }
+            }, GameMode.Config.ZombieRespawnTime);
+            
+            Timer.Create(() => 
+            {
+                if (GameMode.Instance.Server.NPCs.Count >= GameMode.Config.MaxZombieWorld)
+                    return;
 
-                        lock (client.Zeds)
-                        {
-                            foreach (var zed in client.Zeds.ToList()) // Création d'une liste temporaire pour check les zeds à supprimer
-                            {
-                                if (!zed.IsStreamedFor(client) || zed.Dimension != client.Dimension || zed.Health == 0)
-                                    continue;
+                lock (GameMode.Instance.Server.NPCs)
+                {
+                    foreach (Zed zed in GameMode.Instance.Server.NPCs)
+                    {
+                        if (!zed.IsValid)
+                            continue;
 
-                                var zpos = zed.GetPosition();
-                                var zdist = ppos.DistanceTo(zpos);
+                        var zpos = zed.GetPosition();
+                        var players = GameMode.Instance.Server.Players.OrderBy(p=> zpos.DistanceTo(p.GetPosition()));
 
-                                if (zdist <= GameMode.Config.ZombieMinAgro)
-                                {
-                                    zed.SurvivorFollowed = client;
-
-                                    if (zdist < 1f)
-                                    {
-                                        zed.AttackPlayer(client);
-                                    }
-                                    else if (zdist < 1000f)
-                                    {
-                                        zed.Follow(client, 320);
-                                    }
-                                }
-                                else if (zdist >= GameMode.Config.MaxZombiePlayer)
-                                {
-                                    zed.ZombieState = ZombieState.Idle;
-                                    zed.MoveTo(zpos.Around(5), 60);
-                                    zed.SurvivorFollowed = null;
-                                }
-                            }
-                        }
+                        zed.BrainPulse((players.Count() > 0) ? (players.ElementAt(0) as Survivor) : null);
                     }
                 }
             }, 1500);
+        }
+
+        [ServerEvent(EventType.NPCDamage)]
+        public void OnNpcDeath(NPC npc, DamageType damageType, double amount)
+        {
+            if (npc is Zed)
+            {
+                Zed zed = npc as Zed;
+
+                switch (damageType)
+                {
+                    case DamageType.Weapon:
+                    case DamageType.Vehicle:
+                    case DamageType.Explosion:
+                        zed.LastHit = GameMode.Instance.Runtime.UptimeSeconds;
+                        break;
+                }
+            }
         }
 
         [ServerEvent(EventType.NPCDeath)]
@@ -89,7 +93,8 @@ namespace OnZed.Entities
                     {
                         survivor.Zeds.Remove(zed);
                         zed.SetRagdoll(true);
-                        //zed.Destroy();
+                        
+                        Timer.Create(() => zed.Destroy(), 2000);
                     }
                 }
             }

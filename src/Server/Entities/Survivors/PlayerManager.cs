@@ -1,6 +1,7 @@
 ﻿using MongoDB.Driver;
 using Onsharp.Commands;
 using Onsharp.Entities;
+using Onsharp.Enums;
 using Onsharp.Events;
 using OnZed.Database;
 using OnZed.Utils;

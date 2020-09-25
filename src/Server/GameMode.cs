@@ -37,6 +37,10 @@ namespace OnZed
             {
                 Logger.Info("Starting OnZed Resource!");
 
+                Runtime.DisableEntityPoolRefreshing();
+
+                Logger.Info("Loading server configuration.");
+                Config = Data.Config<OnZedConfig>();
                 TaskManager.Initialize();
 
                 Server.OverrideEntityFactory(new ClientFactory());
@@ -44,9 +48,6 @@ namespace OnZed
 
                 Server.RegisterServerEvents(new PlayerManager());
                 Server.RegisterServerEvents(new ZedsManager());
-
-                Logger.Info("Loading server configuration.");
-                Config = Data.Config<OnZedConfig>();
 
                 Logger.Info("Loading MongoDB database");
                 if (!Database.MongoDb.Init())
